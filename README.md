@@ -37,7 +37,6 @@ This project implements a **Retrieval-Augmented Generation (RAG)** pipeline:
 ### 📋 Prerequisites
 
 - Python **3.8+**
-- Google AI API key for the Gemini model
 
 ### 📥 Installation
 

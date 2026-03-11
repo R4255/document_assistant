@@ -1,17 +1,13 @@
 import os
 import tempfile
-from typing import List,Dict
-from urllib import response
+from typing import List, Dict
 from dotenv import load_dotenv
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains import RetrievalQA
-from sqlalchemy import all_
-from torch import chunk
-
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_classic.chains import RetrievalQA  # noqa: E402
 load_dotenv()
 
 class DocumentAssistant:
@@ -20,7 +16,7 @@ class DocumentAssistant:
             model_name = 'sentence-transformers/all-MiniLM-L6-v2'
         )
         self.llm = ChatGoogleGenerativeAI(
-            model = 'gemini-2.0-flash',
+            model = 'gemini-3-flash-preview',
             temperature = 0
         )
         self.vector_store = None
@@ -59,7 +55,7 @@ class DocumentAssistant:
             
     def load_vector_store(self, directory:str) -> None:
         if os.path.exists(directory):
-            self.vector_store = FAISS.load_local(directory, self.embeddings)
+            self.vector_store = FAISS.load_local(directory, self.embeddings, allow_dangerous_deserialization=True)
             print(f'Vector Store loaded from {directory}')
         else:
             print('No Vector Store found at the specified directory.')
@@ -77,7 +73,7 @@ class DocumentAssistant:
             return_source_documents = True
         )
     
-        result = qa_chain({'query': question})
+        result = qa_chain.invoke({'query': question})
         '''
         {
         'result': 'LangChain is a framework for developing applications powered by language models.',
